@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserDataLibrary", "UserDataAppSolution\UserDataLibrary.csproj", "{03531C64-48EB-43AB-A2C1-46DE99C3030A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfUserDataApp", "WpfUserDataApp\WpfUserDataApp.csproj", "{2174E4FA-7DA7-4756-A905-0849D202828A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03531C64-48EB-43AB-A2C1-46DE99C3030A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03531C64-48EB-43AB-A2C1-46DE99C3030A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03531C64-48EB-43AB-A2C1-46DE99C3030A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03531C64-48EB-43AB-A2C1-46DE99C3030A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2174E4FA-7DA7-4756-A905-0849D202828A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2174E4FA-7DA7-4756-A905-0849D202828A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2174E4FA-7DA7-4756-A905-0849D202828A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2174E4FA-7DA7-4756-A905-0849D202828A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB21FA7E-5C4A-46D8-AEDE-98B73B563450}
+	EndGlobalSection
+EndGlobal
