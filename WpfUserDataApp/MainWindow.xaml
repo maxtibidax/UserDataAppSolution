@@ -11,27 +11,21 @@
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converters:Base64ToImageSourceConverter x:Key="Base64ToImageConverter"/>
-        <Style TargetType="TextBlock" x:Key="WrapTextBlockStyle">
+
+        <!-- Стиль для TextBlock внутри ячеек DataGrid, обеспечивающий перенос текста -->
+        <Style TargetType="TextBlock" x:Key="WrappingTextBlockInGridStyle">
             <Setter Property="TextWrapping" Value="Wrap"/>
+            <!-- Дополнительно можно настроить отступы и выравнивание, если нужно -->
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
-        <Style TargetType="DataGridCell" x:Key="WrappingDataGridCellStyle">
-            <Setter Property="Template">
-                <!-- Используем Template вместо ContentTemplate для лучшей обработки -->
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type DataGridCell}">
-                        <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                                <ContentPresenter.ContentTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" Style="{StaticResource WrapTextBlockStyle}"/>
-                                    </DataTemplate>
-                                </ContentPresenter.ContentTemplate>
-                            </ContentPresenter>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+
+        <!-- Стиль для центрирования CheckBox в DataGridCheckBoxColumn -->
+        <Style TargetType="CheckBox" x:Key="CenteredCheckBoxStyle">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
+
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -46,17 +40,27 @@
         </StackPanel>
 
         <DataGrid x:Name="DataItemsGrid" Grid.Row="1" AutoGenerateColumns="False"
-                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False">
+                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False"
+                  CanUserResizeRows="False" HeadersVisibility="Column"
+                  RowDetailsVisibilityMode="Collapsed">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2.5*" CellStyle="{StaticResource WrappingDataGridCellStyle}"/>
-                <DataGridTextColumn Header="Группа" Binding="{Binding Group}" Width="*" CellStyle="{StaticResource WrappingDataGridCellStyle}"/>
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="1.5*" CellStyle="{StaticResource WrappingDataGridCellStyle}"/>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2.5*"
+                                    ElementStyle="{StaticResource WrappingTextBlockInGridStyle}"/>
+                <DataGridTextColumn Header="Группа" Binding="{Binding Group}" Width="*"
+                                    ElementStyle="{StaticResource WrappingTextBlockInGridStyle}"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="1.5*"
+                                    ElementStyle="{StaticResource WrappingTextBlockInGridStyle}"/>
+
                 <DataGridTextColumn Header="Рейтинг" Binding="{Binding Rating, StringFormat={}{0:F2}}" Width="Auto"/>
-                <!-- F2 = 2 знака после запятой -->
                 <DataGridTextColumn Header="Дата зачисл." Binding="{Binding EnrollmentDate, StringFormat={}{0:dd.MM.yyyy}}" Width="Auto"/>
                 <DataGridTextColumn Header="Время зачисл." Binding="{Binding EnrollmentTime, StringFormat={}{0:hh\\:mm}}" Width="Auto"/>
-                <DataGridCheckBoxColumn Header="Стипендия" Binding="{Binding ReceivesScholarship}" Width="Auto"/>
+
+                <DataGridCheckBoxColumn Header="Стипендия" Binding="{Binding ReceivesScholarship}" Width="Auto"
+                                        ElementStyle="{StaticResource CenteredCheckBoxStyle}"
+                                        EditingElementStyle="{StaticResource CenteredCheckBoxStyle}"/>
+
                 <DataGridTextColumn Header="Курс" Binding="{Binding CurrentCourseYear}" Width="Auto"/>
+
                 <DataGridTemplateColumn Header="Фото" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

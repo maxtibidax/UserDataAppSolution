@@ -29,7 +29,7 @@ namespace UserDataLibrary.Models
             Group = group;
             // Можно установить значения по умолчанию для других полей здесь, если нужно
             EnrollmentDate = DateTime.Today;
-            CurrentCourseYear = CourseYear.First;
+            CurrentCourseYear = CourseYear.Первый;
         }
     }
 }
