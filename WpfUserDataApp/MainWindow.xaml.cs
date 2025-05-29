@@ -5,6 +5,9 @@ using UserDataLibrary.Exceptions; // Импорт пользовательски
 using UserDataLibrary.Models;    // Импорт модели StudentData
 using UserDataLibrary.Services;   // Импорт сервисов (DataService)
 using WpfUserDataApp.Utils;       // Импорт логгера
+using System.Text; // For Encoding in File.WriteAllText (if ReportService didn't use it)
+using Microsoft.Win32; // For SaveFileDialog
+using System.Diagnostics; // For Process.Start
 
 namespace WpfUserDataApp
 {
@@ -15,6 +18,7 @@ namespace WpfUserDataApp
     {
         private readonly string _currentUsername;
         private readonly DataService _dataService;
+        private readonly ReportService _reportService;
 
         public MainWindow(string username)
         {
@@ -23,6 +27,7 @@ namespace WpfUserDataApp
             CurrentUserTextBlock.Text = _currentUsername; // Отображаем имя пользователя в UI
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory; // Путь к папке приложения
+            _reportService = new ReportService();
 
             try
             {
@@ -51,6 +56,120 @@ namespace WpfUserDataApp
         }
 
         // Метод для загрузки (или перезагрузки) данных студента в DataGrid
+        private void DataItemsGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            int selectedCount = DataItemsGrid.SelectedItems.Count;
+
+            SingleStudentReportButton.IsEnabled = selectedCount == 1;
+            MultipleStudentsReportButton.IsEnabled = selectedCount > 0;
+            AggregateReportButton.IsEnabled = selectedCount > 0;
+        }
+        // Helper method to show SaveFileDialog and get file path
+        private string GetReportFilePath(string defaultFileName)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "HTML files (*.html)|*.html|All files (*.*)|*.*",
+                FileName = defaultFileName,
+                DefaultExt = ".html",
+                Title = "Сохранить отчет как..."
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                return saveFileDialog.FileName;
+            }
+            return null;
+        }
+
+        // Helper method to open report
+        private void TryOpenReport(string filePath)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError(ex, $"Failed to open report file: {filePath}");
+                MessageBox.Show($"Не удалось автоматически открыть отчет: {ex.Message}", "Ошибка открытия файла", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void SingleStudentReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedStudent = DataItemsGrid.SelectedItem as StudentData;
+            if (selectedStudent == null)
+            {
+                MessageBox.Show("Пожалуйста, выберите одного студента для отчета.", "Выбор студента", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            string filePath = GetReportFilePath($"Отчет_{selectedStudent.FullName.Replace(" ", "_")}.html");
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            try
+            {
+                _reportService.GenerateSingleStudentReport(selectedStudent, filePath);
+                MessageBox.Show($"Отчет успешно создан: {filePath}", "Генерация отчета", MessageBoxButton.OK, MessageBoxImage.Information);
+                TryOpenReport(filePath);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError(ex, $"Generating single student report for {selectedStudent.FullName}");
+                MessageBox.Show($"Ошибка при создании отчета: {ex.Message}", "Ошибка отчета", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MultipleStudentsReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedStudents = DataItemsGrid.SelectedItems.Cast<StudentData>().ToList();
+            if (!selectedStudents.Any())
+            {
+                MessageBox.Show("Пожалуйста, выберите одного или нескольких студентов для отчета.", "Выбор студентов", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            string filePath = GetReportFilePath("Отчет_выбранные_студенты.html");
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            try
+            {
+                _reportService.GenerateMultipleStudentsReport(selectedStudents, filePath);
+                MessageBox.Show($"Отчет успешно создан: {filePath}", "Генерация отчета", MessageBoxButton.OK, MessageBoxImage.Information);
+                TryOpenReport(filePath);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError(ex, $"Generating multiple students report. Count: {selectedStudents.Count}");
+                MessageBox.Show($"Ошибка при создании отчета: {ex.Message}", "Ошибка отчета", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AggregateReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedStudents = DataItemsGrid.SelectedItems.Cast<StudentData>().ToList();
+            if (!selectedStudents.Any())
+            {
+                MessageBox.Show("Пожалуйста, выберите одного или нескольких студентов для сводного отчета.", "Выбор студентов", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            string filePath = GetReportFilePath("Сводный_отчет_студенты.html");
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            try
+            {
+                _reportService.GenerateAggregateReport(selectedStudents, filePath);
+                MessageBox.Show($"Сводный отчет успешно создан: {filePath}", "Генерация отчета", MessageBoxButton.OK, MessageBoxImage.Information);
+                TryOpenReport(filePath);
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.LogError(ex, $"Generating aggregate report. Count: {selectedStudents.Count}");
+                MessageBox.Show($"Ошибка при создании сводного отчета: {ex.Message}", "Ошибка отчета", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private void LoadUserData()
         {
             try

@@ -40,9 +40,11 @@
         </StackPanel>
 
         <DataGrid x:Name="DataItemsGrid" Grid.Row="1" AutoGenerateColumns="False"
-                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False"
+                  IsReadOnly="True" SelectionMode="Extended" CanUserAddRows="False"
                   CanUserResizeRows="False" HeadersVisibility="Column"
-                  RowDetailsVisibilityMode="Collapsed">
+                  RowDetailsVisibilityMode="Collapsed"
+                  SelectionChanged="DataItemsGrid_SelectionChanged">
+            <!-- <<<<<<<<<<< ADD THIS LINE >>>>>>>>>>>>> -->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="2.5*"
                                     ElementStyle="{StaticResource WrappingTextBlockInGridStyle}"/>
@@ -76,6 +78,9 @@
         </DataGrid>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="SingleStudentReportButton" Content="Отчет по студенту" Margin="5" Click="SingleStudentReportButton_Click" IsEnabled="False"/>
+            <Button x:Name="MultipleStudentsReportButton" Content="Отчет по выбранным" Margin="5" Click="MultipleStudentsReportButton_Click" IsEnabled="False"/>
+            <Button x:Name="AggregateReportButton" Content="Сводный отчет" Margin="5" Click="AggregateReportButton_Click" IsEnabled="False"/>
             <Button Content="Обновить" Width="100" Margin="5" Click="RefreshButton_Click"/>
             <Button Content="Добавить" Width="100" Margin="5" Click="AddButton_Click"/>
             <Button Content="Редактировать" Width="100" Margin="5" Click="EditButton_Click"/>
